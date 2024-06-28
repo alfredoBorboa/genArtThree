@@ -21,7 +21,7 @@ const scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = -5;
 
-scene.background = new THREE.Color( 0x778DA9 );
+scene.background = new THREE.Color( 0xf4f3ee );
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio( window.devicePixelRatio );
@@ -74,8 +74,8 @@ let finalPoints = [];
 for( let i = 0; i < widthElements; i++ ){
     for( let j = 0; j < depthElements; j++){
         //for( let k = 0; k < heightElements; k++ ){
-            let geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 );
-            let material = new THREE.MeshLambertMaterial({ color: 0x1d3557, transparent: true, opacity: 1.0 });
+            let geometry = new THREE.TetrahedronGeometry( 0.1, 0 );
+            let material = new THREE.MeshLambertMaterial({ color: 0xa9d6e5, transparent: true, opacity: 1.0 });
             let cube = new THREE.Mesh( geometry, material );
             cube.position.x = (i - (widthElements/2)) * 0.14;
             //cube.position.y = (k - (heightElements/2)) * 0.18;
@@ -100,8 +100,9 @@ for( let i = 0; i < widthElements; i++ ){
 
 scene.add( cubeContainer );
 
-let bgCubeGeom = new THREE.PlaneGeometry( 17, 17 );
-let bgCubeMaterial = new THREE.MeshLambertMaterial( { color: 0xE0E1DD } );
+let bgCubeGeom = new THREE.PlaneGeometry( 17, 17, 10, 10 );
+//let bgCubeMaterial = new THREE.MeshLambertMaterial( { color: 0xE0E1DD, wireframe: true, wireframeLineWidth: 5 } );
+let bgCubeMaterial = new THREE.MeshLambertMaterial( { color: 0x000000, wireframe: true, wireframeLineWidth: 5 } );
 let bgCube = new THREE.Mesh( bgCubeGeom, bgCubeMaterial );
 bgCube.position.y = -1;
 bgCube.rotation.x = degToRad( -90 );
