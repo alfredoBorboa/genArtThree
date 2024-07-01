@@ -23,10 +23,14 @@ camera.position.z = -5;
 
 scene.background = new THREE.Color( 0xf4f3ee );
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio( window.devicePixelRatio );
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+
+//renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setPixelRatio( 5 );
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
+
+
 
 //These are just helpers. Should be commented on production.
 let controls = new OrbitControls( camera, renderer.domElement );
@@ -74,7 +78,7 @@ let finalPoints = [];
 for( let i = 0; i < widthElements; i++ ){
     for( let j = 0; j < depthElements; j++){
         //for( let k = 0; k < heightElements; k++ ){
-            let geometry = new THREE.TetrahedronGeometry( 0.1, 0 );
+            let geometry = new THREE.TetrahedronGeometry( 0.08, 0 );
             let material = new THREE.MeshLambertMaterial({ color: 0xa9d6e5, transparent: true, opacity: 1.0 });
             let cube = new THREE.Mesh( geometry, material );
             cube.position.x = (i - (widthElements/2)) * 0.14;
@@ -100,9 +104,9 @@ for( let i = 0; i < widthElements; i++ ){
 
 scene.add( cubeContainer );
 
-let bgCubeGeom = new THREE.PlaneGeometry( 17, 17, 10, 10 );
+let bgCubeGeom = new THREE.PlaneGeometry( 17, 17, 18, 18 );
 //let bgCubeMaterial = new THREE.MeshLambertMaterial( { color: 0xE0E1DD, wireframe: true, wireframeLineWidth: 5 } );
-let bgCubeMaterial = new THREE.MeshLambertMaterial( { color: 0x000000, wireframe: true, wireframeLineWidth: 5 } );
+let bgCubeMaterial = new THREE.MeshLambertMaterial( { color: 0x000000, wireframe: true, wireframeLineWidth: 0.1 } );
 let bgCube = new THREE.Mesh( bgCubeGeom, bgCubeMaterial );
 bgCube.position.y = -1;
 bgCube.rotation.x = degToRad( -90 );
@@ -128,8 +132,15 @@ function animate(){
         //console.log( "2222//////" );
         //console.log( originalPositions[ i ] );
         cubeContainer.children[ i ].position.x += noiseIncrement * 0.01;
-        //cubeContainer.children[ i ].position.y += noiseIncrement * 0.01;
+        cubeContainer.children[ i ].position.y += noiseIncrement * 0.008;
         cubeContainer.children[ i ].position.z += noiseIncrement * 0.01;
+        //console.log( cubeContainer.children[ i ].material );
+        if( cubeContainer.children[ i ].position.y > 0 ){
+            cubeContainer.children[ i ].material.color.r = (169/255) + cubeContainer.children[ i ].position.y * 1.5;
+            cubeContainer.children[ i ].material.color.g = (214/255) + cubeContainer.children[ i ].position.y * 1.5;
+            cubeContainer.children[ i ].material.color.b = (229/255) + cubeContainer.children[ i ].position.y * 1.5;
+            cubeContainer.children[ i ].material.needsUpdate = true;
+        }
         /*if( testCounter % 60 == 0 ){
             let haloGeometry = new THREE.BoxGeometry(0.05, 0.05, 0.05 );
             let haloMaterial = new THREE.MeshBasicMaterial({color:0xFF0000});
@@ -147,16 +158,11 @@ function animate(){
     
     if( testCounter == 200 && !haveLinesBeenDrawn ){
         haveLinesBeenDrawn = true;
-        console.log( initialPoints );
-        console.log( "333333" );
         
 
         for( let i = 0; i < initialPoints.length; i++ ){
-            console.log( "11111" );
             finalPoints.push( cubeContainer.children[ i ].position.clone() );
         }
-
-        console.log( finalPoints );
 
         for( let i = 0; i < initialPoints.length; i++ ){
             let points = [];
@@ -166,6 +172,9 @@ function animate(){
             let line = new THREE.Line( lineGeometry, lineMaterial );
             //scene.add( line );
         }
+
+        
+        //document.write('<img src="' + + '"/>');
     }    
 
     testCounter++;
@@ -189,3 +198,11 @@ function computeDistance( x1, x2, y1, y2, z1, z2 ){
     let distance = Math.sqrt( a * a + b * b + c * c );
     return distance;
 }
+
+document.addEventListener( 'keyup', function( e ){
+    if( e.key == 'p' ){
+        const canvas = renderer.domElement;
+        const img = canvas.toDataURL('image/png');
+        document.getElementById( 'exportedImg' ).src = img;
+    }
+});
